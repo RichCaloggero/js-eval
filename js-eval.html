@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <title>JS-Eval</title>
+<style>
+#input {position: fixed; bottom: 0; height: 3%;}
+#output: {position: fixed; top: 0; overflow: scroll; height: 97%;}
+</style>
 </head>
 <body>
 <div id="input" role="region" aria-label="Input">
@@ -95,7 +99,10 @@ output.appendChild (titleContainer);
 output.appendChild (container);
 
 // give DOM time to settle in order for live region to trigger, before inserting content
-setTimeout (() => container.innerHTML = content, 100);
+setTimeout (() => {
+container.innerHTML = content
+container.scrollIntoView ();
+}, 100);
 return container;
 } // displayResult
 
@@ -131,6 +138,7 @@ let command = document.getElementById (`command-${index}`);
 $$("#output .command")
 .forEach (e => e.setAttribute ("tabIndex", "-1"));
 command.setAttribute ("tabindex", "0");
+command.scrollIntoView ();
 
 input.value = history[index];
 console.log ("command: ", input.value);
