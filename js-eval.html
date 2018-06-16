@@ -18,6 +18,8 @@
 
 <script>
 "use strict";
+{ // start
+"use strict";
 let $ = document.querySelector.bind(document);
 let $$ = document.querySelectorAll.bind(document);
 let input = $("#input .text");
@@ -53,7 +55,7 @@ function executeCommand (expression, output) {
 history.push (expression);
 commandIndex = history.length;
 try {
-return displayResult (evaluate(expression), expression, output);
+displayResult (evaluate(expression), expression, output);
 } catch (e) {
 displayResult (e.message, expression, output);
 } // catch
@@ -71,13 +73,9 @@ return ${expression};
 ();
 } // evaluate
 
-function displayResult (_result, inputText, output) {
-// clean up results of toSource()
-let result = _result;
-if (typeof(_result) === "object" || typeof(_result) === "function") {
-result = result.toSource();
-if (typeof(_result) === "object") result = result.replace (/\((.*)\)/, "$1");
-} // if
+window.log = (expression) => displayResult(expression, "", output);
+function displayResult (result, inputText = "", output) {
+result = stringify (result);
 
 let content = `
 <code><pre>
@@ -85,17 +83,18 @@ ${result}
 </pre></code>
 `;
 
+if (inputText) {
 let titleText = `<kbd>${inputText}</kbd>`;
 let titleContainer = document.createElement ("h3");
 titleContainer.innerHTML = titleText;
+output.appendChild (titleContainer);
+} // if
 
 let container = document.createElement ("div");
 container.setAttribute ("id", `command-${history.length-1}`);
 container.setAttribute ("expression", inputText);
 container.setAttribute ("aria-live", "polite");
 container.classList.add("command");
-
-output.appendChild (titleContainer);
 output.appendChild (container);
 
 // give DOM time to settle in order for live region to trigger, before inserting content
@@ -103,8 +102,18 @@ setTimeout (() => {
 container.innerHTML = content
 container.scrollIntoView ();
 }, 100);
-return container;
 } // displayResult
+
+function stringify (_result) {
+// clean up results of toSource()
+let result = _result;
+if (typeof(_result) === "object" || typeof(_result) === "function") {
+result = result.toSource();
+if (typeof(_result) === "object") result = result.replace (/\((.*)\)/, "$1");
+} // if
+
+return result;
+} // stringify
 
 /// history
 
@@ -144,6 +153,7 @@ input.value = history[index];
 console.log ("command: ", input.value);
 } // if
 } // displayHistoryEntry 
+} // end
 
 </script>
 
